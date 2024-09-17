@@ -1,5 +1,6 @@
 const jwt  = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
+const userExtractor = require('../utils/middleware').userExtractor
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
@@ -17,19 +18,26 @@ blogsRouter.get('/:id', async(request, response) => {
   }
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndDelete(request.params.id)
-  response.status(204).end()
+blogsRouter.delete('/:id', userExtractor, async (request, response) => {
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (!decodedToken.id) {
+    return response.status(401).json({error: 'invalid token'})
+  }
+  
+  const blog = await Blog.findById(request.params.id)
+  
+  if (blog.user.toString() === decodedToken.id) {
+    await Blog.findByIdAndDelete(request.params.id)
+    response.status(204).end()
+  } else {
+    response.status(403).json({ error: 'wrong user, cannot delete resource'})
+  }
 })
   
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', userExtractor, async (request, response) => {
     const body = request.body
 
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    if (!decodedToken.id) {
-      return response.status(401).json({error: 'invalid token'})
-    }
-    const user = await User.findById(decodedToken.id)
+    const user = request.user
 
     if (body.title === undefined || body.url === undefined) {
       response.status(400).json(body)

@@ -1,10 +1,10 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFhYWEiLCJpZCI6IjY2ZTFhNTJlMjIxMzIzNDdjNDdhMzMwZiIsImlhdCI6MTcyNjQ5MTQ0OH0.x0cWgziNtIXOCxx8WdEWGprka-jnlXjyFYvy9B6_--U
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imp1dSIsImlkIjoiNjZlODM4MGMzMzljOTM3YmU3YjEzYjliIiwiaWF0IjoxNzI2NTc0MTQ3fQ.Wdx_aA7TP2mBQ0KoQc0ApJfSXB3UhzEcAJHRVv6FPB
 
 {
-    "title": "xxx",
-    "author": "xxx",
-    "url": "pizzaonline.fi",
-    "likes": 666
+    "title": "juun blogi",
+    "author": "juu",
+    "url": "jep.fi",
+    "likes": 100
 }
