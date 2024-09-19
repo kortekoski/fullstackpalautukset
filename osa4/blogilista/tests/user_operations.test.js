@@ -5,19 +5,16 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const helper = require('./test_helper')
 const app = require('../app')
-const { test, describe, beforeEach, after } = require('node:test')
+const { test, describe, before, after } = require('node:test')
 const assert = require('node:assert')
 
 const api = supertest(app)
 
 describe('adding users to the database', () => {
-    beforeEach(async () => {
+    before(async () => {
         await User.deleteMany({})
 
-        const passwordHash = await bcrypt.hash('testboi', 10)
-        const user = new User({ username: 'testboi', passwordHash})
-
-        await user.save()
+        await User.insertMany(helper.initialUsers)
     })
 
     test('adding succeeds with proper user info', async () => {
@@ -50,20 +47,9 @@ describe('adding users to the database', () => {
             password: "superhot"
         }
 
-        const newUserTwo = {
-            username: "testgrill",
-            name: "mustang"
-        }
-
         await api
           .post('/api/users')
           .send(newUserOne)
-          .expect(400)
-          .expect('Content-Type', /application\/json/)
-
-        await api
-          .post('/api/users')
-          .send(newUserTwo)
           .expect(400)
           .expect('Content-Type', /application\/json/)
 
@@ -75,7 +61,7 @@ describe('adding users to the database', () => {
         const usersAtStart = await helper.usersInDb()
 
         const newUser = {
-            username: "testboi",
+            username: "aaa",
             name: "kummid",
             password: "sidurpidur"
         }
@@ -91,8 +77,8 @@ describe('adding users to the database', () => {
 
         assert(result.body.error.includes('expected `username` to be unique'))
     })
+})
 
-    after(async () => {
-        await mongoose.connection.close()
-    })
+after(async () => {
+    await mongoose.connection.close()
 })

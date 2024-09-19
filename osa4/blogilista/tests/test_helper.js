@@ -1,5 +1,7 @@
+const { forEach } = require('lodash')
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
 
 const initialBlogs = [
     {
@@ -22,9 +24,22 @@ const initialBlogs = [
     }
 ]
 
+const initialUsers = [
+  {
+    username: "aaa",
+    passwordHash: "pww",
+    name: "bbb"
+  },
+  {
+    username: "zzz",
+    passwordHash: "pww",
+    name: "xxx"
+  }
+]
+
 const blogsInDb = async () => {
-    const blogs = await Blog.find({})
-    return blogs.map(blog => blog.toJSON())
+  const blogs = await Blog.find({})
+  return blogs.map(blog => blog.toJSON())
 }
 
 const usersInDb = async () => {
@@ -32,6 +47,18 @@ const usersInDb = async () => {
   return users.map(user => user.toJSON())
 }
 
+const getToken = async () => {
+  const user = await User.findOne()
+
+  const userForToken = {
+    username: user.username,
+    id: user._id
+  }
+    
+  const token = jwt.sign(userForToken, process.env.SECRET)
+  return 'Bearer ' + token
+}
+
 module.exports = {
-    initialBlogs, blogsInDb, usersInDb
+    initialBlogs, initialUsers, blogsInDb, usersInDb, getToken
 }

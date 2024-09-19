@@ -2,19 +2,24 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const helper = require('./test_helper')
 const app = require('../app')
-const { test, describe, beforeEach, after } = require('node:test')
+const { test, describe, before, beforeEach, after } = require('node:test')
 const assert = require('node:assert')
+const jwt = require('jsonwebtoken')
 
 const api = supertest(app)
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
-beforeEach(async () => {
-  await Blog.deleteMany({})
-  await Blog.insertMany(helper.initialBlogs)
-})
+let token
 
 describe('verifying blogs in database', () => {
+
+  before(async () => {
+    await Blog.deleteMany({})
+    await Blog.insertMany(helper.initialBlogs)
+  })
+
   test('three JSON blogs are returned', async () => {
     const response = await api.get('/api/blogs')
 
@@ -24,16 +29,31 @@ describe('verifying blogs in database', () => {
 })
 
 describe('adding new blogs', () => {
-  test('blog is added', async () => {
+  beforeEach(async () => {
+    await Promise.all([
+      User.deleteMany({}),
+      Blog.deleteMany({})
+    ])
+  
+    await Promise.all([
+      User.insertMany(helper.initialUsers),
+      Blog.insertMany(helper.initialBlogs)
+    ])
+    
+    token = await helper.getToken()
+  })
+
+  test('blog is added with token', async () => {
     const newBlog = {
       "title": "atesti",
       "author": "b",
       "url": "c",
       "likes": 1
     }
-  
+
     await api
       .post('/api/blogs')
+      .set({ Authorization: token })
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -43,6 +63,20 @@ describe('adding new blogs', () => {
     assert.strictEqual(currentBlogs.length, helper.initialBlogs.length + 1)
     assert.ok(currentBlogs.map(blog => blog.title).includes('atesti'))
   
+  })
+
+  test('blog cannot be added without token', async () => {
+    const newBlog = {
+      "title": "atesti",
+      "author": "b",
+      "url": "c",
+      "likes": 1
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
   })
 
   test('id field is defined correctly', async () => {
@@ -59,6 +93,7 @@ describe('adding new blogs', () => {
   
     await api
       .post('/api/blogs')
+      .set({ Authorization: token})
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -83,29 +118,45 @@ describe('adding new blogs', () => {
   
     await api
       .post('/api/blogs')
+      .set({ Authorization: token})
       .send(noTitleBlog)
       .expect(400)
     
     await api
       .post('/api/blogs')
+      .set({ Authorization: token})
       .send(noUrlBlog)
       .expect(400)
   })
 })
 
 describe('removing blogs', () => {
-  test('blog is removed', async () => {
+  test('blog is removed with the correct user', async () => {
     const startingBlogs = await helper.blogsInDb()
-    const removedId = startingBlogs[0].id
-    const removeTitle = startingBlogs[0].title
+
+    const newBlog = {
+      title: "atesti",
+      author: "b",
+      url: "c",
+      likes: 1
+    }
+
+    await api
+      .post('/api/blogs')
+      .set({ Authorization: token})
+      .send(newBlog)
+    
+    const blogFromDb = await Blog.findOne().sort({ _id: -1 })
+    const removedId = blogFromDb._id
   
     await api
       .delete(`/api/blogs/${removedId}`)
+      .set({ Authorization: token})
       .expect(204)
     
     const endingBlogs = await helper.blogsInDb()
-    assert.strictEqual(endingBlogs.length, startingBlogs.length - 1)
-    assert.ok(!endingBlogs.map(blog => blog.title).includes(removeTitle))
+    assert.strictEqual(endingBlogs.length, startingBlogs.length)
+    assert.ok(!endingBlogs.map(blog => blog.title).includes("atesti"))
   })
 })
 
@@ -152,8 +203,8 @@ describe('editing blogs', () => {
     assert.strictEqual(endingBlogs[0].title, "Kommunistinen manifesti")
     assert.strictEqual(endingBlogs[0].author, "Karl Marx")
   })
+})
 
-  after(async () => {
-    await mongoose.connection.close()
-  })
+after(async () => {
+  await mongoose.connection.close()
 })
