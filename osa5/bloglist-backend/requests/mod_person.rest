@@ -1,0 +1,10 @@
+PUT http://localhost:3003/api/blogs/6572fe9b4a6367112ec301a1
+Content-Type: application/json
+
+{
+    "title": "q",
+    "author": "anon",
+    "url": "pizzaonline.fi",
+    "likes": 600,
+    "id": "6572fe9b4a6367112ec301a1"
+}
