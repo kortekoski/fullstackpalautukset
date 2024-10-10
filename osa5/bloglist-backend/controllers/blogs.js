@@ -36,8 +36,12 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
 
     const user = request.user
 
+    if (!user) {
+      return response.status(403).json({ error: 'user missing' })
+    }
+
     if (body.title === undefined || body.url === undefined) {
-      response.status(400).json(body)
+      return response.status(400).json({ error: 'title or url missing' })
     } else {
       const blog = new Blog({
         title: body.title,
