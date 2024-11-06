@@ -31,4 +31,16 @@ const createBlog = async newBlog => {
   }
 }
 
+const likeBlog = async blog => {
+  const blogUrl = baseUrl + '/' + blog.id
+  const newBlog = {...blog, likes: blog.likes + 1}
+
+  try {
+    const response = await axios.put(blogUrl, newBlog)
+  } catch (exception) {
+    throw new Error(exception)
+  }
+}
+
+export { likeBlog }
 export default { getAll, setToken, createBlog }

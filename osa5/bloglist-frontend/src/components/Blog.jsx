@@ -1,4 +1,6 @@
 import { useState } from "react"
+import { likeBlog } from '../services/blogs'
+
 
 const Blog = ({ blog }) => {
 
@@ -9,7 +11,16 @@ const Blog = ({ blog }) => {
     marginBottom: 10
   }
 
+  const getUser = () => {
+    if (Object.keys(blog).includes('user')){
+      return blog.user.username
+    } else {
+      return 'user not defined'
+    }
+  }
+
   const [showInfo, setShowInfo] = useState(false)
+  const username = getUser()
   
   if (!showInfo) {
     return (
@@ -29,10 +40,10 @@ const Blog = ({ blog }) => {
         </div>
         <div>
           likes {blog.likes}
-          <button onClick={() => console.log('like')}>like</button>
+          <button onClick={() => likeBlog(blog)}>like</button>
         </div>
         <div>
-          {blog.user.username}
+          {username}
         </div>
         <button onClick={() => setShowInfo(false)}>hide info</button>
       </div>  
