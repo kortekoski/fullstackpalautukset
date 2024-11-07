@@ -42,5 +42,17 @@ const likeBlog = async blog => {
   }
 }
 
+const deleteBlog = async blog => {
+  const headers = { 'Authorization': token }
+  const blogUrl = baseUrl + '/' + blog.id
+
+  try {
+    const response = await axios.delete(blogUrl, {headers: headers})
+  } catch (exception) {
+    throw new Error(exception.response.data.error)
+  }
+}
+
 export { likeBlog }
+export { deleteBlog }
 export default { getAll, setToken, createBlog }

@@ -17,24 +17,20 @@ mongoose.connect(url)
 
 const numberValidator = (number) => {
   if(!(number.includes('-'))){
-    console.log('1')
     return false
   }
 
   const numberparts = number.split('-')
 
   if (numberparts.length !== 2) {
-    console.log('2')
     return false
   }
 
   if(numberparts[0].length < 2 || numberparts[0].length > 3){
-    console.log('3')
     return false
   }
 
   if(numberparts[1].length < 6 || numberparts[1].length > 12) {
-    console.log('4')
     return false
   }
 

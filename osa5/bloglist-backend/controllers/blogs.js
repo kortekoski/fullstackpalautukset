@@ -30,7 +30,7 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
     response.status(403).json({ error: 'wrong user, cannot delete resource'})
   }
 })
-  
+   
 blogsRouter.post('/', userExtractor, async (request, response) => {
     const body = request.body
 
@@ -65,7 +65,8 @@ blogsRouter.put('/:id', async (request, response) => {
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes
+    likes: body.likes,
+    user: body.user_id
   }
 
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog)

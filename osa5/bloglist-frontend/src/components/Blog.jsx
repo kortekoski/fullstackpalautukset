@@ -1,8 +1,8 @@
 import { useState } from "react"
-import { likeBlog } from '../services/blogs'
+import { likeBlog, deleteBlog } from '../services/blogs'
 
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, sessionUser }) => {
 
   const blogStyle = {
     padding: 10,
@@ -16,6 +16,14 @@ const Blog = ({ blog }) => {
       return blog.user.username
     } else {
       return 'user not defined'
+    }
+  }
+
+  const showDelete = () => {
+    if (getUser() === sessionUser.username) {
+      return true
+    } else {
+      return false
     }
   }
 
@@ -44,6 +52,9 @@ const Blog = ({ blog }) => {
         </div>
         <div>
           {username}
+        </div>
+        <div>
+          {showDelete() ? <button onClick={() => deleteBlog(blog)}>delete blog</button> : null}
         </div>
         <button onClick={() => setShowInfo(false)}>hide info</button>
       </div>  

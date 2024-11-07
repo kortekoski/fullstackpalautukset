@@ -114,8 +114,6 @@ const App = () => {
           .update(oldPerson.id, newPerson)
           .then(updatedPerson => {
             const newPersons = persons.map(p => p.id !== oldPerson.id ? p : newPerson)
-            console.log(updatedPerson)
-            console.log(newPersons)
             setPersons(newPersons)
             setNotificationType('ok')
             setNotification(`The number of ${updatedPerson.name} has been changed.`)
