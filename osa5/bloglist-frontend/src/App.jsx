@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import Togglable from './components/Togglable'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
@@ -6,7 +7,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
 
-const Notification = ({notification}) => {
+const Notification = ({ notification }) => {
   if (notification === null) {
     return null
   } else {
@@ -18,7 +19,7 @@ const Notification = ({notification}) => {
   }
 }
 
-const Error = ({errorMessage}) => {
+const Error = ({ errorMessage }) => {
   if (errorMessage === null) {
     return null
   } else {
@@ -37,11 +38,12 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [notification, setNotification] = useState(null)
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [blogs])
 
   useEffect(() => {
@@ -79,7 +81,7 @@ const App = () => {
 
   const handleLogout = async (event) => {
     event.preventDefault()
-    
+
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
     blogService.setToken(null)
@@ -101,6 +103,7 @@ const App = () => {
 
       const newBlogs = await blogService.getAll()
       setBlogs(newBlogs)
+      blogFormRef.current.toggleVisibility()
     } catch (error) {
       setErrorMessage(error.message)
       setTimeout(() => {setErrorMessage(null)}, 5000)
@@ -112,10 +115,10 @@ const App = () => {
       <div>
         <h2>Login</h2>
         <Error errorMessage={errorMessage} />
-        <LoginForm 
-          handleSubmit={handleLogin} 
-          setUsername={setUsername} setPassword={setPassword} 
-          username={username} p
+        <LoginForm
+          handleSubmit={handleLogin}
+          setUsername={setUsername} setPassword={setPassword}
+          username={username}
           password={password}
         />
       </div>
@@ -127,8 +130,9 @@ const App = () => {
         <Notification notification={notification} />
         <Error errorMessage={errorMessage} />
         <p>{user.username} logged in</p>
-        <h3>Create a blog</h3>
-        <BlogForm handleBlogForm={handleBlogForm}/>
+        <Togglable buttonLabel='create blog' ref={blogFormRef}>
+          <BlogForm handleBlogForm={handleBlogForm}/>
+        </Togglable>
         <button onClick={handleLogout}>Log out</button>
         {blogs
           .sort((a, b) => b.likes - a.likes)

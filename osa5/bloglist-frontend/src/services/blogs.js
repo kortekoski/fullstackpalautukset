@@ -12,8 +12,6 @@ const setToken = newToken => {
   newToken === null
     ? token = null
     : token = `Bearer ${newToken}`
-
-  console.log(`CURRENT TOKEN IS ${token}`)
 }
 
 const createBlog = async newBlog => {
@@ -23,7 +21,7 @@ const createBlog = async newBlog => {
   }
 
   try {
-    const response = await axios.post(baseUrl, newBlog, {headers: headers})
+    const response = await axios.post(baseUrl, newBlog, { headers: headers })
 
     return response.data
   } catch (exception) {
@@ -33,7 +31,7 @@ const createBlog = async newBlog => {
 
 const likeBlog = async blog => {
   const blogUrl = baseUrl + '/' + blog.id
-  const newBlog = {...blog, likes: blog.likes + 1}
+  const newBlog = { ...blog, likes: blog.likes + 1 }
 
   try {
     const response = await axios.put(blogUrl, newBlog)
@@ -43,13 +41,15 @@ const likeBlog = async blog => {
 }
 
 const deleteBlog = async blog => {
-  const headers = { 'Authorization': token }
-  const blogUrl = baseUrl + '/' + blog.id
+  if (window.confirm(`Delete ${blog.title} by ${blog.author}?`)){
+    const headers = { 'Authorization': token }
+    const blogUrl = baseUrl + '/' + blog.id
 
-  try {
-    const response = await axios.delete(blogUrl, {headers: headers})
-  } catch (exception) {
-    throw new Error(exception.response.data.error)
+    try {
+      const response = await axios.delete(blogUrl, { headers: headers })
+    } catch (exception) {
+      throw new Error(exception.response.data.error)
+    }
   }
 }
 
