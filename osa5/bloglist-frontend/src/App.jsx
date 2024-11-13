@@ -110,6 +110,21 @@ const App = () => {
     }
   }
 
+  const handleLike = async (blog) => {
+    const newBlog = { ...blog, likes: blog.likes + 1 }
+
+    const updatedBlog = await blogService.updateBlog(newBlog)
+
+    const newBlogs = await blogService.getAll()
+    setBlogs(newBlogs)
+  }
+
+  const handleRemoval = async (blog) => {
+    if (window.confirm(`Delete ${blog.title} by ${blog.author}?`)){
+      blogService.deleteBlog(blog)
+    }
+  }
+
   if (user === null){
     return (
       <div>
@@ -136,7 +151,7 @@ const App = () => {
         <button onClick={handleLogout}>Log out</button>
         {blogs
           .sort((a, b) => b.likes - a.likes)
-          .map(blog => <Blog key={blog.id} blog={blog} sessionUser={user}/>)
+          .map(blog => <Blog key={blog.id} blog={blog} sessionUser={user} handleLike={handleLike} handleRemoval={handleRemoval}/>)
         }
       </div>
     )

@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { likeBlog, deleteBlog } from '../services/blogs'
 import PropTypes from 'prop-types'
 
 
-const Blog = ({ blog, sessionUser }) => {
+const Blog = ({ blog, sessionUser, handleLike, handleRemoval }) => {
 
   const blogStyle = {
     padding: 10,
@@ -49,13 +48,13 @@ const Blog = ({ blog, sessionUser }) => {
         </div>
         <div>
           likes {blog.likes}
-          <button onClick={() => likeBlog(blog)}>like</button>
+          <button onClick={() => handleLike(blog)}>like</button>
         </div>
         <div>
           {username}
         </div>
         <div>
-          {showDelete() ? <button onClick={() => deleteBlog(blog)}>delete blog</button> : null}
+          {showDelete() ? <button onClick={() => handleRemoval(blog)}>delete blog</button> : null}
         </div>
         <button onClick={() => setShowInfo(false)}>hide info</button>
       </div>
@@ -63,7 +62,7 @@ const Blog = ({ blog, sessionUser }) => {
   }
 }
 
-Blog.PropTypes = {
+Blog.propTypes = {
   id: PropTypes.string.isRequired,
   blog: PropTypes.object.isRequired,
   sessionUser: PropTypes.object.isRequired

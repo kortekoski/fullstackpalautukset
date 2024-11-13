@@ -29,30 +29,26 @@ const createBlog = async newBlog => {
   }
 }
 
-const likeBlog = async blog => {
+const updateBlog = async blog => {
   const blogUrl = baseUrl + '/' + blog.id
-  const newBlog = { ...blog, likes: blog.likes + 1 }
 
   try {
-    const response = await axios.put(blogUrl, newBlog)
+    const response = await axios.put(blogUrl, blog)
+    return response.data
   } catch (exception) {
-    throw new Error(exception)
+    throw new Error(exception.response.data.error)
   }
 }
 
 const deleteBlog = async blog => {
-  if (window.confirm(`Delete ${blog.title} by ${blog.author}?`)){
-    const headers = { 'Authorization': token }
-    const blogUrl = baseUrl + '/' + blog.id
+  const headers = { 'Authorization': token }
+  const blogUrl = baseUrl + '/' + blog.id
 
-    try {
-      const response = await axios.delete(blogUrl, { headers: headers })
-    } catch (exception) {
-      throw new Error(exception.response.data.error)
-    }
+  try {
+    const response = await axios.delete(blogUrl, { headers: headers })
+  } catch (exception) {
+    throw new Error(exception.response.data.error)
   }
 }
 
-export { likeBlog }
-export { deleteBlog }
-export default { getAll, setToken, createBlog }
+export default { getAll, setToken, createBlog, updateBlog, deleteBlog }
