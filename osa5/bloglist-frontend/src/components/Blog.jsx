@@ -47,8 +47,8 @@ const Blog = ({ blog, sessionUser, handleLike, handleRemoval }) => {
          {blog.url}
         </div>
         <div>
-          likes {blog.likes}
-          <button onClick={() => handleLike(blog)}>like</button>
+          likes <text data-testid="blog-like">{blog.likes}</text>
+           <button onClick={() => handleLike(blog)}>like</button>
         </div>
         <div>
           {username}
@@ -63,7 +63,6 @@ const Blog = ({ blog, sessionUser, handleLike, handleRemoval }) => {
 }
 
 Blog.propTypes = {
-  id: PropTypes.string.isRequired,
   blog: PropTypes.object.isRequired,
   sessionUser: PropTypes.object.isRequired
 }
