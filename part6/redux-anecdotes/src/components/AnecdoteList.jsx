@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux"
-import { createVote } from "../reducers/anecdoteReducer"
-import { createNotification, killNotification } from "../reducers/notificationReducer"
+import { voteAnecdote } from "../reducers/anecdoteReducer"
+import { createNotification } from "../reducers/notificationReducer"
 
 const AnecdoteList = () => {
     const style = {
@@ -11,18 +11,10 @@ const AnecdoteList = () => {
     const filter = useSelector(state => state.filter)
     const dispatch = useDispatch()
 
-    const vote = (id) => {
-        console.log('vote', id)
-        const votedAnecdote = anecdotes.find(
-            (a) => a.id === id 
-        )
-        const notificationText = 'you voted for ' + '"' + votedAnecdote.content + '"'
-
-        dispatch(createVote(id))
-        dispatch(createNotification(notificationText))
-        setTimeout(() => {
-            dispatch(killNotification())
-        }, 5000)
+    const vote = (anecdote) => {
+        console.log('vote', anecdote.id)
+        dispatch(voteAnecdote(anecdote))
+        dispatch(createNotification(`you voted '${anecdote.content}'`, 2))
     }
     
     return (
@@ -37,7 +29,7 @@ const AnecdoteList = () => {
                 </div>
                 <div>
                     has {anecdote.votes}
-                    <button onClick={() => vote(anecdote.id)}>vote</button>
+                    <button onClick={() => vote(anecdote)}>vote</button>
                 </div>
                 </div>
             )}
